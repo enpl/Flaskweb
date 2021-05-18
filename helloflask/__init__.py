@@ -1,16 +1,66 @@
 from flask import Flask, g, make_response, Response, request, session
+from flask import render_template, Markup
 from datetime import timedelta
 
 app = Flask(__name__)
 app.debug = True #use only debug
+# app.jinja_env.trim_blocks = True
 
 app.config['SERVER_NAME'] = 'local.com:5000'
+
+
+
+class Nav:
+    def __init__(self, title, url='#', children=[]):
+        self.title = title
+        self.url = url
+        self.children = children
+
+@app.route('/tmpl3/')
+def tmpl3():
+    py = Nav("파이썬", "https://search.naver.com")
+    java = Nav("자바", "https://search.naver.com")
+    t_prg = Nav("프로그래밍 언어", "https://search.naver.com", [py, java])
+
+    jinja = Nav("Jinja", "https://search.naver.com")
+    gc = Nav("Genshi, Cheetah", "https://search.naver.com")
+    flask = Nav("플라스크", "https://search.naver.com", [jinja, gc])
+
+    spr = Nav("스프링", "https://search.naver.com")
+    ndjs = Nav("노드JS", "https://search.naver.com")
+    t_webf = Nav("웹 프레임워크", "https://search.naver.com", [flask, spr, ndjs])
+
+    my = Nav("나의 생산", "https://search.naver.com")
+    issue = Nav("이슈 게시판", "https://search.naver.com")
+    t_other = Nav("기타", "https://search.naver.com", [my, issue])
+
+    return render_template("index.html", navs = [t_prg, t_webf, t_other])
 
 app.config.update(
     SECRET_KEY = 'X1243yRH!mMwf',
     SESSION_COOKIE_NAME = 'pyweb_flask_session',
     PERMANENT_SESSION_LIFETIME=timedelta(31)
 )
+
+@app.route('/tmpl2/')
+def tmpl2():
+    a = (1, "만남1", "김건모", False, [])
+    b = (2, "만남2", "노사연", True, [a])
+    c = (3, "만남3", "익명", False, [a, b])
+    d = (4, "만남4", "익명2", False, [a, b, c])
+
+    return render_template("index.html", lst2 = [a, b, c, d])
+
+@app.route("/tmpl/")
+def t():
+    tit = Markup("<strong>Title</strong>")
+    mu = Markup("<h1>iii = <i>%s</i></h1>") #html 자체 모듈화. 재사용성 증가.(웹 컴포넌트)
+    h = mu % "Italic"
+    print("h = ", h)
+
+    lst = [("만남1", "김건모"), ("만남2", "노사연"), ("Light it up", "Major Lazer"), ("Ocean", "Mike Perry")]
+
+    return render_template("index.html", title = tit, mu = h, lst=lst)
 
 @app.route('/delsess')
 def delsess():

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name ="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=dege">
+    <title>Jinja Test Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename ='style.css')}}">
+</head>
+<body>
+    {% set title = 'TTT' %}
+    <div>
+        Jinja Test : {{title}} - {{mu}}
+    </div>
+    <hr>
+    <div>
+        Copyright <a href="{{ url_for('tmpl3') }}">Flask work</a>
+    </div>
+    <hr>
+    <ul>
+        {% for rank, title, name, hide, ref in lst2 recursive %}
+            <li>
+                {{title}}: {{name}}
+                <ul class="sub"> {{ loop(ref)}} </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <ul>
+        <!--
+        {% for item in lst %}
+        <li>{{item[0]}}: {{item[1]}}</li>
+        {% endfor %}
+        -->
+        {% for title, name in lst if not isShow %}
+            <li class="{{loop.cycle('aaa', 'bbb','')}}">{{title}}: {{name}} - {{loop.revindex}}</li> <!-- 더 직관적으로 코딩 가능-->
+        {% else %}
+            <li>There is no data.</li>
+        {% endfor %}
+        <!-- 표에 stripe 처리같은 것을 위해 loop.cycle 사용 가능.-->
+    </ul>
+    <hr>
+    <ul>
+        {% for nav in navs recursive %}
+            <li>
+                <a href="{{nav.url | e}}"> {{nav.title}} -  {{loop.depth}}</a>
+                {%- if nav.children -%}
+                <ul class="{% if loop.depth != 1%} font-sm {% endif %}">
+                    {{ loop(nav.children)}}
+                </ul>
+                {%- endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <hr>
+    {{ "<strong>Strong</strong>" | safe}} <!-- 강제로 실행 -->
+    <hr>
+    {{ "<strong>Strong</strong>" | striptags}} <!-- 코드를 벗김-->
+    <hr>
+
+    <pre>
+                <!-- 코드를 날 것으로 그대로 나오게 함-->
+        {% raw %}
+            {% if True %}
+            TTT
+            {% endif %}
+        {% endraw %} <!-- 소스코드를 업로드시킬 때 사용 가능-->
+
+        ttt 한글
+        {%- if True -%}
+            TTT
+        {%- endif -%} qqq <!--하이픈을 이용해서 트림 블록에 변환을 줄 수 있다.-->
+    </pre>
+</body>
+</html>
